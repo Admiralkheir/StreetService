@@ -1,0 +1,6 @@
+@Street.Api_HostAddress = http://localhost:5228
+
+GET {{Street.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
