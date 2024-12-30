@@ -1,6 +1,47 @@
-@Street.Api_HostAddress = http://localhost:5228
+@Street.Api_HostAddress = http://localhost:80
 
-GET {{Street.Api_HostAddress}}/weatherforecast/
+### Get Street by ID
+GET {{Street.Api_HostAddress}}/Street/GetStreet?streetId=5
 Accept: application/json
 
 ###
+
+### Create a new Street
+POST {{Street.Api_HostAddress}}/Street/CreateStreet
+Content-Type: application/json
+
+{
+  "StreetName": "Main Street",
+  "Capacity": 100,
+  "Geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [30, 10],
+      [10, 30],
+      [40, 40]
+    ]
+  }
+}
+
+###
+
+### Add Point to Street
+POST {{Street.Api_HostAddress}}/Street/AddPointToStreet
+Content-Type: application/json
+
+{
+  "StreetId": 5,
+  "Point": {
+    "type": "Point",
+    "coordinates": [20, 20]
+  }
+}
+
+###
+
+### Delete Street by ID
+DELETE {{Street.Api_HostAddress}}/Street/DeleteStreet?streetId=3
+Accept: application/json
+
+###
+

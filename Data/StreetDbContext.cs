@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StreetService.Domain;
+using StreetService.Domain.Entities;
 using System.Reflection;
 
 namespace StreetService.Data

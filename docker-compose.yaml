@@ -1,0 +1,26 @@
+﻿# docker-compose.yml
+version: '3.8'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=test
+      - ConnectionStrings__StreetDbConnection=Host=db;Database=StreetDb;Username=dbuser;Password=dbpassword
+    depends_on:
+      - db
+
+  db:
+    image: postgis/postgis
+    environment:
+      - POSTGRES_DB=StreetDb
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql

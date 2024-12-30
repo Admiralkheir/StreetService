@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -7,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace StreetService.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialStreetDb : Migration
+    public partial class InitialDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,18 +24,14 @@ namespace StreetService.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Geometry = table.Column<LineString>(type: "geometry", nullable: false),
-                    Capacity = table.Column<int>(type: "integer", nullable: false)
+                    Capacity = table.Column<int>(type: "integer", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Street", x => x.Id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Street_Name",
-                table: "Street",
-                column: "Name",
-                unique: true);
         }
 
         /// <inheritdoc />

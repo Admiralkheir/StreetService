@@ -1,0 +1,48 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: StreetService
+  name: StreetService-deployment
+  namespace: test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: StreetService
+  template:
+    metadata:
+      labels:
+        app: StreetService
+    spec:
+      containers:
+        - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: test
+          image: reg.df-api.net/app/StreetService:0.1
+          imagePullPolicy: IfNotPresent
+          name: StreetService
+          ports:
+            - containerPort: 8080
+            # - containerPort: 9090
+            #   name: metrics
+            #   protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 500Mi
+            requests:
+              cpu: 50m
+              memory: 200Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: StreetService
+spec:
+  selector:
+    app: StreetService
+  ports:
+  - port: 8080
+    targetPort: 80
+  type: LoadBalancer

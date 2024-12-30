@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StreetService.Domain;
+using StreetService.Domain.Entities;
 
 namespace StreetService.Data.Configurations
 {
@@ -12,7 +12,7 @@ namespace StreetService.Data.Configurations
 
             builder.Property(x => x.Name).IsRequired().HasMaxLength(256);
 
-            builder.HasIndex(x => x.Name).IsUnique();
+            builder.Property(x => x.CreatedDate).HasDefaultValueSql("now()");
         }
     }
 }
