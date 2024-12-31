@@ -32,7 +32,9 @@ namespace StreetService.Features.Street.AddPointToStreet
                 if (street is null)
                     throw new StreetNotFoundException(request.StreetId);
 
-                // Chose method, with DB or Algorithm
+                // Chose method, with DB or Algorithm.
+                // We can check from Redis or DB for changing this flag at runtime without restarting the service
+                // or we can use feature flag mechanism with Azure App Configuration store
                 var usePostGis = _configuration.GetValue<bool>("UsePostGis");
 
                 if (usePostGis)

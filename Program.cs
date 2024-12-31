@@ -32,6 +32,9 @@ namespace StreetService
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            // Add health checks
+            builder.Services.AddHealthChecks();
+
             // For DistributedLock
             _ = builder.Services.AddSingleton<IDistributedLockProvider>(_ => new PostgresDistributedSynchronizationProvider(builder.Configuration.GetConnectionString("StreetDbConnection"),
                 opt =>
@@ -39,8 +42,10 @@ namespace StreetService
                     opt.UseTransaction(true);
                 }));
 
+            // Add FluentValidation
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+            // Add MediatR
             builder.Services.AddMediatR(config =>
             {
                 config.RegisterServicesFromAssemblyContaining<Program>();
@@ -48,6 +53,7 @@ namespace StreetService
                 config.AddOpenBehavior(typeof(ValidationBehavior<,>));
             });
 
+            // Add DBContext
             builder.Services.AddDbContext<StreetDbContext>(options =>
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("StreetDbConnection"),
@@ -56,6 +62,8 @@ namespace StreetService
                     o.UseNetTopologySuite();
                 });
             });
+
+            // Add ExceptionHandlingMiddleware
             builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
             var app = builder.Build();
@@ -67,6 +75,7 @@ namespace StreetService
                 app.MapOpenApi();
             }
 
+            app.MapHealthChecks("/healthz");
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseAuthorization();
 

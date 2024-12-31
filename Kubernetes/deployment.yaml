@@ -1,48 +1,120 @@
-﻿apiVersion: apps/v1
+﻿# deployment
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: StreetService
-  name: StreetService-deployment
+    app: streetservice
+  name: streetservice-deployment
   namespace: test
 spec:
-  replicas: 3
+  # replicas: 3
   selector:
     matchLabels:
-      app: StreetService
+      app: streetservice
   template:
     metadata:
       labels:
-        app: StreetService
+        app: streetservice
     spec:
       containers:
         - env:
             - name: ASPNETCORE_ENVIRONMENT
               value: test
-          image: reg.df-api.net/app/StreetService:0.1
+          image: streetservice:0.1
           imagePullPolicy: IfNotPresent
-          name: StreetService
+          name: streetservice
           ports:
             - containerPort: 8080
-            # - containerPort: 9090
-            #   name: metrics
-            #   protocol: TCP
           resources:
             limits:
-              cpu: 200m
-              memory: 500Mi
+              cpu: 100m
+              memory: 300Mi
             requests:
               cpu: 50m
               memory: 200Mi
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: streetservice
 ---
+# service
 apiVersion: v1
 kind: Service
 metadata:
-  name: StreetService
+  name: streetservice
+  namespace: test
 spec:
   selector:
-    app: StreetService
+    app: streetservice
   ports:
-  - port: 8080
-    targetPort: 80
+  - port: 80
+    targetPort: 8080
   type: LoadBalancer
+---
+# pdb
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: streetservice-pdb
+  namespace: test
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: streetservice
+---
+# hpa
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: streetservice-test-hpa
+  namespace: test
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: streetservice-deployment
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 15
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 20
+      - type: Pods
+        value: 5
+        periodSeconds: 20
+      selectPolicy: Max
+  minReplicas: 3
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70
