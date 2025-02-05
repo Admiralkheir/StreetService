@@ -33,7 +33,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project was created as part of an [article](https://dev.to/admiralkheir/zero-downtime-deployment-for-aspnet-applications-in-kubernetes-30li) examining the fiction of Zero-Downtime Deployment in ASP.NET Web API projects published on Kubernetes.
+This project was created for using postgis with asp.net core. It is a simple project that provides a service to CRUD operations for streets. It uses postgis for spatial data operations.
 
 ### Built With
 
@@ -51,7 +51,7 @@ To get a local copy up and running follow these simple example steps.
 ### Prerequisites
 
 * Visual Studio or Visual Studio Code
-* [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+* [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 * Docker
 * Kind
 
